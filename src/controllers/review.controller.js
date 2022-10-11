@@ -1,11 +1,9 @@
 const Product = require("../models/Product");
 const Review = require("../models/Review");
-const User = require("../models/User");
 
 const postReview = async (req, res) => {
   const { productId } = req.params;
   const { userId } = req.body;
-  console.log(userId);
   if (productId && userId) {
     try {
       const review = new Review({
@@ -57,10 +55,7 @@ const getReview = async (req, res) => {
 const getUserReviews = async (req, res) => {
   const { userId } = req.params;
   if (userId) {
-    console.log(userId);
-    const user = await User.findById(userId);
-    console.log(user);
-    const reviews = user.reviews;
+    const reviews = await Review.find({ user: userId });
     if (reviews) {
       return res.status(200).json(reviews);
     } else {
@@ -72,9 +67,7 @@ const getUserReviews = async (req, res) => {
 const getProductReviews = async (req, res) => {
   const { productId } = req.params;
   if (productId) {
-    const product = await Product.findById(productId);
-    console.log(product);
-    const reviews = product.reviews;
+    const reviews = await Review.find({ product: productId });
     if (reviews) {
       return res.status(200).json(reviews);
     } else {
