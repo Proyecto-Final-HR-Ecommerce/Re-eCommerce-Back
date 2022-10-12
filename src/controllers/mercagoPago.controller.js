@@ -43,8 +43,7 @@ const postOrder = async (req, res) => {
 
 const notification = async (req, res) => {
     const datos = req.query
-      
-    console.log(datos)
+
  
 
     const idStatus = datos["data.id"]

@@ -18,7 +18,7 @@ const registerPost = async (req, res) => {
       process.env.SECURITY_PASS
     );
     const user = new User({ username, email, password: encriptPassword });
-    const userSave = await user.save();   
+    await user.save();   
 
     emailRegister({
       email,
@@ -26,7 +26,7 @@ const registerPost = async (req, res) => {
       token : user.token
     })
 
-    return res.status(200).json(userSave);
+    return res.status(200).json({ error: false, msg: "registrado" });
   } catch (error) {
     console.log(error);
   }
