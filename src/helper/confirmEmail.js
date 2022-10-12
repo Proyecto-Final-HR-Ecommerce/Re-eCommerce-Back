@@ -41,4 +41,22 @@ const emailRegister = async (datos) => {
         await sgMail.send(msg);
 } 
 
-module.exports = emailRegister
+const forgotPasswordSendEmail = async(datos) => { 
+        
+   const {email, token } = datos
+
+   sgMail.setApiKey(process.env.SENDGRID_APY_KEY);
+    const msg = {
+        to: email,
+       from: 'tomikapo1160@gmail.com',
+        subject: 'Olvidaste tu Contraseña',
+        text: 'cambia tu constraseña',
+        html: `<p>Hola, accede al link de abajo para cambiar tu contraseña.</p>
+                <a href="${process.env.FRONTEND_URL}/changePassword/${token}">Cambiar la password</a> </p>
+                <p> Si tu no solicitaste el cambio de contraseña por "olvidaste tu contraseña", alguien intenta hackearte </p>`
+        };
+
+        await sgMail.send(msg);
+
+} 
+module.exports = {emailRegister, forgotPasswordSendEmail}
