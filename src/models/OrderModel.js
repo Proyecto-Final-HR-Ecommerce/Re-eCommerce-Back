@@ -64,9 +64,16 @@ const orderSchema = mongoose.Schema({
         required: true,
         default: false
     },
-    delivered:{
-        type: Date
+    date:{
+        type: Date,
+        default: Date.now
+    },
+
+    address : {
+        type : String,
+        required : true
     }
+    
 })
 const OrderModel = mongoose.model('OrderModel', orderSchema )
 
