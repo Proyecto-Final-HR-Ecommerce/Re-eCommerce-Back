@@ -24,6 +24,10 @@ const productsShema = mongoose.Schema({
     type: String,
     required: true,
   },
+  ordered: {
+    type: Number,
+    default: 0,
+  },
 
   stock: {
     type: Number,

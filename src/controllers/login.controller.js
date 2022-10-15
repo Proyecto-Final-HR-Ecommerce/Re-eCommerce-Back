@@ -2,7 +2,7 @@ const User = require("../models/User");
 const CryptoJS = require("crypto-js");
 const generarJWT = require("../helper/generateJWT");
 const generateId = require("../helper/generateId");
-const emailRegister = require('../helper/confirmEmail')
+const {emailRegister, forgotPasswordSendEmail} = require('../helper/confirmEmail')
 //REGISTRAR USUARIO
 const registerPost = async (req, res) => {
   const { username, email, password } = req.body;
@@ -18,7 +18,7 @@ const registerPost = async (req, res) => {
       process.env.SECURITY_PASS
     );
     const user = new User({ username, email, password: encriptPassword });
-    const userSave = await user.save();   
+    await user.save();   
 
     emailRegister({
       email,
@@ -26,7 +26,7 @@ const registerPost = async (req, res) => {
       token : user.token
     })
 
-    return res.status(200).json(userSave);
+    return res.status(200).json({ error: false, msg: "registrado" });
   } catch (error) {
     console.log(error);
   }
@@ -111,7 +111,10 @@ const forgotPassword = async (req, res) => {
     }
 
     userExists.token = generateId();
+
     await userExists.save();
+
+     forgotPasswordSendEmail({email, token : userExists.token})
     return res.json({ msg: "Hemos enviado un email con las instrucciones" });
   } catch (error) {
     console.log(error);
@@ -122,7 +125,7 @@ const checkToken = async (req, res) => {
   const { token } = req.params;
   const validateToken = await User.findOne({ token });
   if (validateToken) {
-    return res.json({ msg: "Token aprobado" });
+    return res.json({error: false ,  msg: "Token aprobado" });
   } else {
     return res.status(400).json({ error: true, msg: "Token inválido" });
   }
@@ -133,11 +136,17 @@ const newPassword = async (req, res) => {
   const { password } = req.body;
   const user = await User.findOne({ token });
   try {
+   
+ 
+    const encriptPassword = CryptoJS.AES.encrypt(
+      password,
+      process.env.SECURITY_PASS
+    );
     user.token = null;
-    user.password = password;
+    user.password = encriptPassword;
     await user.save();
 
-    return res.json({ msg: "Password modificado con éxito" });
+    return res.json({ error : false , msg: "Password modificado con éxito" });
   } catch (error) {
     res.status(500).json({ error: true, msg: "Error al guardar" });
   }
