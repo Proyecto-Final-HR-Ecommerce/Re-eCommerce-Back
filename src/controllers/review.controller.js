@@ -14,12 +14,13 @@ const postReview = async (req, res) => {
       });
       const reviewSave = await review.save();
       if (reviewSave) {
+        const reviews = await Review.find({ product: productId });
         await Product.findByIdAndUpdate(
           { _id: productId },
           {
             $set: {
               rating: req.body.rating,
-              numReviews: +1,
+              numReviews: reviews.length,
               reviews: review._id,
             },
           }

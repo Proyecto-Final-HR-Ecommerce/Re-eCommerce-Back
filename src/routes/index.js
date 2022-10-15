@@ -6,6 +6,7 @@ const userRoutes = require("./user/user.routes");
 const userCategory = require("./category/category.routes.js");
 const reviewsRoutes = require("./review/review.routes");
 const mercagoPago = require("./mercadoPago/mercagoPago.routes");
+const orderRoutes = require("./orders/order.routes");
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use("/", reviewsRoutes);
 router.use("/", login);
 router.use("/", userCategory);
 router.use("/", mercagoPago);
+router.use("/", orderRoutes);
 
 module.exports = router;
