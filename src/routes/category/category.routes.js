@@ -6,7 +6,6 @@ const {
   getProductCategories,
   modifyProductCategories,
 } = require("../../controllers/category.controller");
-// const { getProduct } = require("../../controllers/products.controller");
 
 const router = Router();
 
