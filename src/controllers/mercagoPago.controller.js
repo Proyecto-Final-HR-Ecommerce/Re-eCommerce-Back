@@ -9,12 +9,12 @@ const postOrder = async (req, res) => {
     
    try {
     
-    const products = req.body
+    const data = req.body
      const id = req.params.id
+     console.log(data[0])
+   
     
-     console.log(products)
-    
-      order = new OrderModel({ user : id , orderItems : products.map(el => {
+      order = new OrderModel({ user : id , orderItems : data[0].map(el => {
         return {
             name: el.name,
             qty: el.count,
@@ -23,14 +23,14 @@ const postOrder = async (req, res) => {
             product: el._id
         }
      }),  
-    
+     address: data[1]
     
     })
      
     await order.save();
      
     
-     const link = await mercadoPagoLink(products)
+     const link = await mercadoPagoLink(data[0])
       
      
      res.json(link)

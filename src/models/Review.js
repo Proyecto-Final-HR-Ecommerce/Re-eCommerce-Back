@@ -22,6 +22,9 @@ const reviewSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  made: {
+    type: Date,
+  },
 });
 
 const Review = mongoose.model("Review", reviewSchema);

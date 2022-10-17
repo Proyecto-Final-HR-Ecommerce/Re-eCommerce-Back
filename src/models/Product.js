@@ -24,6 +24,10 @@ const productsShema = mongoose.Schema({
     type: String,
     required: true,
   },
+  ordered: {
+    type: Number,
+    default: 0,
+  },
 
   stock: {
     type: Number,
@@ -66,6 +70,24 @@ const productsShema = mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  features: [
+    {
+      model : {type: String},
+      frontalCamera : {type: String},
+      so : {type: String},
+      display: {type: String},
+      procesador: {type: String},
+      mainChamber: {type: String},
+      batery: {type: String},
+      ram: {type: String},
+      weight : {type: String},
+      red: {type: String},
+      gb : {type: String},
+      teamSize: {type: String}
+    }
+  ]
+
+  
 });
 
 const Product = mongoose.model("Product", productsShema);
