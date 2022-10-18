@@ -2,13 +2,16 @@ const User = require("../models/User");
 const CryptoJS = require("crypto-js");
 const generarJWT = require("../helper/generateJWT");
 const generateId = require("../helper/generateId");
-const {emailRegister, forgotPasswordSendEmail} = require('../helper/confirmEmail')
+const {
+  emailRegister,
+  forgotPasswordSendEmail,
+} = require("../helper/confirmEmail");
 //REGISTRAR USUARIO
 const registerPost = async (req, res) => {
   const { username, email, password } = req.body;
 
   const userExists = await User.findOne({ email });
-  const userName = await User.findOne({username})
+  const userName = await User.findOne({ username });
 
   if (userExists || userName)
     return res.status(400).json({ error: true, msg: "usuario ya registrado" });
@@ -18,13 +21,13 @@ const registerPost = async (req, res) => {
       process.env.SECURITY_PASS
     );
     const user = new User({ username, email, password: encriptPassword });
-    await user.save();   
+    await user.save();
 
     emailRegister({
       email,
       username,
-      token : user.token
-    })
+      token: user.token,
+    });
 
     return res.status(200).json({ error: false, msg: "registrado" });
   } catch (error) {
@@ -55,9 +58,9 @@ const confirmUser = async (req, res) => {
 //AUTENTICAR USUARIO
 const authenticate = async (req, res) => {
   const user = await User.findOne({ username: req.body.username });
-  if(!user) return res.status(401).send({msg : "¡Usuario no existe!"});
+  if (!user) return res.status(401).send({ msg: "¡Usuario no existe!" });
   if (user.confirmed === false) {
-    return res.status(401).send({ msg: "¡Usuario no confirmado!"});
+    return res.status(401).send({ msg: "¡Usuario no confirmado!" });
   } else {
     const hashPass = CryptoJS.AES.decrypt(
       user?.password,
@@ -65,20 +68,22 @@ const authenticate = async (req, res) => {
     );
     const originalPassword = hashPass.toString(CryptoJS.enc.Utf8);
     const inputPass = req.body.password;
-    if (originalPassword !== inputPass) return res.status(401).json({ msg: "¡Password inválido!" })
-      else res.status(200).json({
-          token: generarJWT(user.id),
-          error: false,
-          msg: "Usuario habilitado para loguearse",
-        });
+    if (originalPassword !== inputPass)
+      return res.status(401).json({ msg: "¡Password inválido!" });
+    else
+      res.status(200).json({
+        token: generarJWT(user.id),
+        error: false,
+        msg: "Usuario habilitado para loguearse",
+      });
   }
 };
 
 //CAMBIAR CONTRASEÑA
 const changePassword = async (req, res) => {
-  const { email } = req.body;
+  const { id } = req.params;
   const inputPass = req.body.password;
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ id });
   if (!user) {
     return res.status(403).json({ error: true, msg: "FORBIDDEN" });
   }
@@ -114,7 +119,7 @@ const forgotPassword = async (req, res) => {
 
     await userExists.save();
 
-     forgotPasswordSendEmail({email, token : userExists.token})
+    forgotPasswordSendEmail({ email, token: userExists.token });
     return res.json({ msg: "Hemos enviado un email con las instrucciones" });
   } catch (error) {
     console.log(error);
@@ -125,7 +130,7 @@ const checkToken = async (req, res) => {
   const { token } = req.params;
   const validateToken = await User.findOne({ token });
   if (validateToken) {
-    return res.json({error: false ,  msg: "Token aprobado" });
+    return res.json({ error: false, msg: "Token aprobado" });
   } else {
     return res.status(400).json({ error: true, msg: "Token inválido" });
   }
@@ -136,8 +141,6 @@ const newPassword = async (req, res) => {
   const { password } = req.body;
   const user = await User.findOne({ token });
   try {
-   
- 
     const encriptPassword = CryptoJS.AES.encrypt(
       password,
       process.env.SECURITY_PASS
@@ -146,7 +149,7 @@ const newPassword = async (req, res) => {
     user.password = encriptPassword;
     await user.save();
 
-    return res.json({ error : false , msg: "Password modificado con éxito" });
+    return res.json({ error: false, msg: "Password modificado con éxito" });
   } catch (error) {
     res.status(500).json({ error: true, msg: "Error al guardar" });
   }
@@ -164,5 +167,5 @@ module.exports = {
   changePassword,
   forgotPassword,
   checkToken,
-  newPassword
+  newPassword,
 };
