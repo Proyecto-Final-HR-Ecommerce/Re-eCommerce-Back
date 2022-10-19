@@ -38,7 +38,7 @@ const categorySchema = mongoose.Schema({
   },
   screen: {
     type: Number,
-    required: true,
+    required: false,
     default: 0,
   },
   freeShipping: {
@@ -52,6 +52,10 @@ const categorySchema = mongoose.Schema({
   },
   storagessd: {
     type: Number,
+    required: false,
+  },
+  watch: {
+    type: Boolean,
     required: false,
   },
   systemOp: {
