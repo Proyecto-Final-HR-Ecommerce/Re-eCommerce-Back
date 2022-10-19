@@ -81,6 +81,7 @@ const getProduct = async (req, res) => {
           return res.status(200).json(productQuery);
         }
         if (rating === "dsc") {
+          console.log("hola")
           const productQuery = await Product.find()
             .limit(limit * 1)
             .skip((page - 1) * limit)
