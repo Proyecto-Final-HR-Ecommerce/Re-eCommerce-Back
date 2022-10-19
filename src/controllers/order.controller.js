@@ -3,7 +3,19 @@ const Order = require("../models/OrderModel");
 const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find();
-    res.status(200).json(orders);
+    const ordersProducts = orders.map((el) => el.orderItems).flat();
+    const itemsPrices = ordersProducts
+      .map((p) => p.price * p.qty)
+      .reduce((a, b) => a + b, 0);
+    const itemsQuantity = ordersProducts
+      .map((p) => p.qty)
+      .reduce((a, b) => a + b, 0);
+    const ordersFinal = {
+      orders,
+      spent: itemsPrices,
+      quantityItems: itemsQuantity,
+    };
+    res.status(200).json(ordersFinal);
   } catch (error) {
     res.status(500).send(error);
   }
