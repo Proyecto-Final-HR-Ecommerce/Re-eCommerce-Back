@@ -12,12 +12,14 @@ const {
 const {
   registerGoogle,
   changeGooglePwd,
+  authenticateG,
 } = require("../../controllers/google.controller");
 
 const router = Router();
 
-router.get("/registerGoogle", registerGoogle);
-router.get("/:id/changeGooglePwd", changeGooglePwd);
+router.post("/registerGoogle", registerGoogle);
+router.post("/loginGoogle", authenticateG);
+router.post("/:id/changeGooglePwd", changeGooglePwd);
 router.post("/register", registerPost);
 router.post("/login", authenticate);
 router.get("/confirmar/:token", confirmUser);
