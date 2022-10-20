@@ -1,6 +1,7 @@
 const Google = require("../models/Google");
 const CryptoJS = require("crypto-js");
 const generateId = require("../helper/generateId");
+const User = require("../models/User");
 
 const registerGoogle = async (req, res) => {
   const { username, email, image, confirmed, token } = req.body;
@@ -11,7 +12,8 @@ const registerGoogle = async (req, res) => {
   const googleName = await Google.findOne({ username });
 
   if (userExists || userName || googleExists || googleName)
-    return res.status(400).json({ error: true, msg: "usuario ya registrado" });
+    return res.status(403).json({ error: true, msg: "usuario ya registrado" });
+
   try {
     const password = generateId();
     const user = new Google({
@@ -26,7 +28,37 @@ const registerGoogle = async (req, res) => {
 
     return res.status(200).json({ error: false, msg: "registrado" });
   } catch (error) {
-    console.log(error);
+    console.log("MATEO TOMA MATE", error);
+  }
+};
+
+const authenticateG = async (req, res) => {
+  const user = await Google.findOne({ username: req.body.username });
+  if (!user) return res.status(401).send({ msg: "Hubo un error." });
+  if (user.email && user.confirmed === true) {
+    res.status(200).json({
+      token: generarJWT(user.id),
+      error: false,
+      msg: "Usuario habilitado para loguearse",
+    });
+  }
+  if (user.confirmed === false) {
+    return res.status(401).send({ msg: "¡Usuario no confirmado!" });
+  } else {
+    const hashPass = CryptoJS.AES.decrypt(
+      user?.password,
+      process.env.SECURITY_PASS
+    );
+    const originalPassword = hashPass.toString(CryptoJS.enc.Utf8);
+    const inputPass = req.body.password;
+    if (originalPassword !== inputPass)
+      return res.status(401).json({ msg: "¡Password inválido!" });
+    else
+      res.status(200).json({
+        token: generarJWT(user.id),
+        error: false,
+        msg: "Usuario habilitado para loguearse",
+      });
   }
 };
 
@@ -59,5 +91,6 @@ const changeGooglePwd = async (req, res) => {
 
 module.exports = {
   registerGoogle,
+  authenticateG,
   changeGooglePwd,
 };
