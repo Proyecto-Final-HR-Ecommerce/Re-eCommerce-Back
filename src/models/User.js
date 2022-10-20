@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 const generateId = require("../helper/generateId");
 
 const UserSchema = mongoose.Schema({
+  image: {
+    type: String,
+  },
   username: {
     type: String,
     required: true,
